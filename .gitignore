@@ -7,3 +7,4 @@ node_modules
 !.docker/entrypoint.sh
 !.docker/postgres/Dockerfile
 
+dist

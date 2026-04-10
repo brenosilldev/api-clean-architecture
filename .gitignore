@@ -1,0 +1,9 @@
+.env
+
+node_modules
+.docker/*
+
+
+!.docker/entrypoint.sh
+!.docker/postgres/Dockerfile
+

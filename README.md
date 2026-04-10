@@ -1,98 +1,202 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# API Clean Architecture
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Projeto de estudo focado em **Clean Architecture**, **Domain-Driven Design (DDD)**, **testes automatizados** e **design patterns** usando NestJS com TypeScript.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Objetivo
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Aprender na prática como estruturar uma API escalável e bem organizada usando os princípios de:
 
-## Project setup
+- **Clean Architecture** — separação clara de responsabilidades em camadas
+- **DDD (Domain-Driven Design)** — modelagem orientada ao domínio do negócio
+- **Testes automatizados** — testes unitários com Jest
+- **Design Patterns** — padrões como Builder (Test Data Builder), Abstract Class, etc.
 
-```bash
-$ npm install
+---
+
+## Stack
+
+| Ferramenta | Uso |
+|---|---|
+| [NestJS](https://nestjs.com/) | Framework principal (HTTP, DI, módulos) |
+| [Fastify](https://fastify.dev/) | Adapter HTTP de alta performance |
+| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática |
+| [Jest](https://jestjs.io/) | Testes unitários e de integração |
+| [@faker-js/faker](https://fakerjs.dev/) | Geração de dados falsos nos testes |
+| [@nestjs/config](https://docs.nestjs.com/techniques/configuration) | Gerenciamento de variáveis de ambiente |
+
+---
+
+## Estrutura de pastas
+
+```
+src/
+├── shared/                          # Código compartilhado entre módulos
+│   ├── domain/
+│   │   └── entities/
+│   │       ├── entity.ts            # Classe abstrata base para todas as entidades
+│   │       └── __tests__/unit/
+│   │           └── entity.spec.ts
+│   └── infrastructure/
+│       └── env-config/
+│           ├── env-config.interface.ts   # Contrato (interface) da config de ambiente
+│           ├── env-config.module.ts      # Módulo NestJS
+│           ├── env-config.service.ts     # Implementação concreta
+│           └── __tests__/unit/
+│               └── env-config.service.spec.ts
+│
+└── users/                           # Módulo de usuários
+    ├── domain/
+    │   ├── entities/
+    │   │   ├── user.entity.ts        # Entidade User do domínio
+    │   │   └── __tests__/unit/
+    │   │       └── user.entity.spec.ts
+    │   └── testing/
+    │       └── helpers/
+    │           └── user-data-builders.ts  # Test Data Builder para UserEntity
+    └── infrastructure/
+        ├── dto/
+        │   ├── create-user.dto.ts
+        │   └── update-user.dto.ts
+        ├── users.controller.ts
+        ├── users.service.ts
+        └── users.module.ts
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## Conceitos aplicados
 
-# watch mode
-$ npm run start:dev
+### Clean Architecture — Separação em camadas
 
-# production mode
-$ npm run start:prod
+O projeto organiza o código em duas camadas principais, onde as dependências apontam **sempre de fora para dentro** — a camada de infraestrutura depende do domínio, nunca o contrário:
+
+```
+[ Infrastructure ]  →  [ Domain ]
+   Controllers           Entities
+   Services              Interfaces (contratos)
+   DTOs
+   env-config
 ```
 
-## Run tests
+- **Domain**: núcleo da aplicação. Contém entidades e regras de negócio puras, sem dependência de frameworks ou bibliotecas externas.
+- **Infrastructure**: implementa os detalhes técnicos (HTTP, configuração, banco de dados) e conhece o domínio.
 
-```bash
-# unit tests
-$ npm run test
+### DDD — Entidade base
 
-# e2e tests
-$ npm run test:e2e
+A classe `Entity<Props>` (`src/shared/domain/entities/entity.ts`) é a classe abstrata base para todas as entidades do domínio. Ela garante que toda entidade tenha:
 
-# test coverage
-$ npm run test:cov
+- Um `id` único gerado automaticamente com `crypto.randomUUID()`, ou recebido como parâmetro (útil para reconstruir entidades vindas do banco)
+- Um conjunto tipado de `props`
+- Um método `toJSON()` para serialização
+
+```ts
+export abstract class Entity<Props = any> {
+    public readonly _id: string;
+    public readonly props: Props;
+
+    constructor(props: Props, id?: string) {
+        this.props = props;
+        this._id = id ?? generateId();
+    }
+
+    get id() {
+        return this._id;
+    }
+}
 ```
 
-## Deployment
+`UserEntity` estende `Entity<UserProps>` e representa o usuário no domínio. O `createdAt` é preenchido automaticamente se não for informado:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```ts
+export class UserEntity extends Entity<UserProps> {
+    constructor(public props: UserProps, id?: string) {
+        super(props, id);
+        this.props.createdAt = this.props.createdAt ?? new Date();
+    }
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+    get name() { return this.props.name; }
+    get email() { return this.props.email; }
+    get password() { return this.props.password; }
+    get createdAt() { return this.props.createdAt; }
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Design Pattern — Test Data Builder
 
-## Resources
+Para facilitar a criação de dados nos testes, foi implementado o padrão **Test Data Builder** com `@faker-js/faker`. Ele gera dados realistas e aleatórios, permitindo sobrescrever apenas o que for relevante para cada cenário de teste:
 
-Check out a few resources that may come in handy when working with NestJS:
+```ts
+// src/users/domain/testing/helpers/user-data-builders.ts
+export function UserDataBuilder(props: Partial<UserProps>): UserProps {
+    return {
+        name: props.name ?? faker.person.firstName(),
+        email: props.email ?? faker.internet.email(),
+        password: props.password ?? faker.internet.password(),
+        ...props,
+    };
+}
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Uso nos testes:
 
-## Support
+```ts
+UserDataBuilder({})                // todos os campos aleatórios
+UserDataBuilder({ name: 'João' }) // só o nome é fixo, o resto aleatório
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Testes automatizados
 
-## Stay in touch
+Os testes unitários ficam em `__tests__/unit/` próximos ao arquivo que testam, com o sufixo `.spec.ts`. Cada teste verifica o comportamento isolado da unidade, sem dependência de banco de dados ou rede:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```ts
+describe('UserEntity', () => {
+    beforeEach(() => {
+        props = UserDataBuilder({});
+        user = new UserEntity(props);
+    });
 
-## License
+    it('should be able to create a user', () => {
+        expect(user.props.name).toBe(props.name);
+        expect(user.createdAt).toBeInstanceOf(Date);
+    });
+});
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## Como rodar
+
+```bash
+# Instalar dependências
+npm install
+
+# Rodar em modo desenvolvimento (watch)
+npm run start:dev
+
+# Rodar os testes
+npm test
+
+# Rodar testes com relatório de cobertura
+npm run test:cov
+```
+
+---
+
+## Variáveis de ambiente
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `PORT` | `3000` | Porta da aplicação |
+| `NODE_ENV` | `development` | Ambiente de execução |
+
+---
+
+## Proximos passos
+
+- [ ] Implementar repositórios (Repository Pattern)
+- [ ] Adicionar casos de uso (Use Cases / Application layer)
+- [ ] Validação de entidades com Value Objects
+- [ ] Testes de integração
+- [ ] Persistência com banco de dados (TypeORM / Prisma)

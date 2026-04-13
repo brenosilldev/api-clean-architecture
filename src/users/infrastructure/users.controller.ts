@@ -25,14 +25,14 @@ export class UsersController {
 
     // POST /users
     // Cria um novo usuário. O corpo da requisição é mapeado para CreateUserDto.
-    @Post()
+    @Post('/create')
     create(@Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
     }
 
     // GET /users
     // Retorna todos os usuários cadastrados.
-    @Get()
+    @Get('/find-all')
     findAll() {
         return this.usersService.findAll();
     }
@@ -40,21 +40,21 @@ export class UsersController {
     // GET /users/:id
     // Retorna um usuário específico pelo ID passado na URL.
     // O "+" converte o parâmetro de string para número.
-    @Get(':id')
+    @Get('/find-one/:id')
     findOne(@Param('id') id: string) {
         return this.usersService.findOne(+id);
     }
 
     // PATCH /users/:id
     // Atualiza parcialmente um usuário. Recebe o id pela URL e os dados pelo corpo.
-    @Patch(':id')
+    @Patch('/update/:id')
     update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.usersService.update(+id, updateUserDto);
     }
 
     // DELETE /users/:id
     // Remove um usuário pelo ID.
-    @Delete(':id')
+    @Delete('/remove/:id')
     remove(@Param('id') id: string) {
         return this.usersService.remove(+id);
     }

@@ -1,17 +1,30 @@
 // Importa a classe abstrata Entity para testar seus comportamentos base.
+import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builders';
 import { Entity } from '../../entity';
+import  { UserEntity, UserProps } from '@/users/domain/entities/user.entity';
+import { en } from '@faker-js/faker';
 
-// Importa UserProps apenas para tipagem dos dados de teste.
-import { UserProps } from '@/users/domain/entities/user.entity';
 
-// "describe" agrupa os testes relacionados à classe Entity.
-// É uma boa prática nomear o describe com o nome da classe/função sendo testada.
+type StubProps = {
+    props1: string;
+    props2: number;
+};
+
+// Classe stub para testar a classe Entity.
+class StubEntity extends Entity<StubProps> {}
+
+
+
+
+
 describe('Entity', () => {
-    // Variáveis declaradas aqui são acessíveis em todos os testes do bloco.
-    let entity: Entity;
-    let props: UserProps;
+    it('should be able to create an entity', () => {
+      const props = { props1: 'props1 value', props2: 10 };
+      const entity = new StubEntity(props);
 
-    // Teste: verifica se a entidade é criada corretamente com um ID gerado automaticamente.
-    // O corpo está vazio por enquanto — será implementado conforme o estudo avança.
-    it('should be able to create an entity with default id', () => {});
+      expect(entity.props.props1).toStrictEqual(props.props1);
+      expect(entity.id).not.toBeNull();
+    });
+
+  
 });

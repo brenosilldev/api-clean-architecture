@@ -70,4 +70,26 @@ describe('UserEntity', () => {
         expect(user.password).toEqual(props.password);
         expect(user.password).toEqual(expect.any(String));
     });
+
+    it('Setter for name should update the name ', () => {
+        user['name'] = 'updated name';
+        expect(user.props.name).toBe('updated name');
+    });
+
+    it('Setter for password should update the password ', () => {
+        user['password'] = 'updated password';
+        expect(user.props.password).toBe('updated password');
+    });
+
+    it('Update name method should update the name ', () => {
+        user.updateName('updated name');
+        expect(user.props.name).toEqual('updated name');
+        
+    });
+
+    it('Update password method should update the password ', () => {
+        user['password'] = 'updated password';
+        expect(user.props.password).toEqual('updated password');
+        
+    });
 });

@@ -5,7 +5,7 @@ import { Module } from '@nestjs/common';
 import { EnvConfigModule } from './shared/infrastructure/env-config/env-config.module';
 
 // UsersModule agrupa tudo relacionado ao recurso de usuários (controller, service, etc.).
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './users/infrastructure/users.module';
 
 // AppModule é o módulo raiz da aplicação.
 // Ele importa todos os outros módulos e serve como ponto de entrada para o NestJS.

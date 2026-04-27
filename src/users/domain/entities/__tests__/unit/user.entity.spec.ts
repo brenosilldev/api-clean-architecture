@@ -84,7 +84,6 @@ describe('UserEntity', () => {
     it('Update name method should update the name ', () => {
         user.updateName('updated name');
         expect(user.props.name).toEqual('updated name');
-        
     });
 
     it('Update password method should update the password ', () => {

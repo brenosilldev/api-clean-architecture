@@ -1,9 +1,6 @@
-// NestFactory é a fábrica principal do NestJS para criar a aplicação.
 import { NestFactory } from '@nestjs/core';
-
-// AppModule é o módulo raiz da aplicação — o ponto de entrada que
-// conecta todos os outros módulos (UsersModule, EnvConfigModule, etc.).
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 // FastifyAdapter adapta o NestJS para usar o Fastify como servidor HTTP
 // em vez do Express (padrão). O Fastify é mais performático para APIs REST.
@@ -22,6 +19,19 @@ async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
         new FastifyAdapter(),
+    );
+    
+    // Pipes são classes que processam os dados da requisição antes de chegar ao controlador.
+    // Aqui estamos usando o ValidationPipe para validar os dados da requisição.
+    // O whitelist remove propriedades que não estão definidas no DTO.
+    // O forbidNonWhitelisted lança um erro se propriedades não definidas forem enviadas.
+    // O transform transforma os dados da requisição para o tipo definido no DTO.
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            forbidNonWhitelisted: true,
+            transform: true,
+        }),
     );
 
     // Inicia o servidor na porta definida em PORT (variável de ambiente)

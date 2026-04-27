@@ -31,18 +31,18 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      'prettier/prettier': ['error', { endOfLine: 'auto' }],
+      '@typescript-eslint/no-explicit-any': 'off', // Permite usar any como tipo
+      '@typescript-eslint/no-floating-promises': 'warn',// Permite usar promessas sem await
+      '@typescript-eslint/no-unsafe-argument': 'warn',// Permite usar argumentos inseguros
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],// Força o uso do prettier
 
-      '@typescript-eslint/interface-name-prefix': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-empty-function': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-empty-interface': 'off',
-      '@typescript-eslint/no-namespace': 'off'
+      '@typescript-eslint/interface-name-prefix': 'off',// Permite usar interface-name-prefix
+      '@typescript-eslint/explicit-function-return-type': 'off',// Permite usar explicit-function-return-type
+      '@typescript-eslint/explicit-module-boundary-types': 'off',// Permite usar explicit-module-boundary-types
+      '@typescript-eslint/no-empty-function': 'off',// Permite usar no-empty-function
+      '@typescript-eslint/no-unused-vars': 'off',// Permite usar no-unused-vars
+      '@typescript-eslint/no-empty-interface': 'off',// Permite usar no-empty-interface
+      '@typescript-eslint/no-namespace': 'off',// Permite usar no-namespace
     },
   },
 );

@@ -4,5 +4,12 @@
   "tabWidth": 4,
   "useTabs": false,
   "semi": true,
-  "printWidth": 80
+  "printWidth": 80,
+  "prettier/prettier": [
+    "error",
+    {
+      "singleQuote": true,
+      "parser": "flow"
+    }
+  ]
 }

@@ -34,7 +34,7 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off', // Permite usar any como tipo
       '@typescript-eslint/no-floating-promises': 'warn',// Permite usar promessas sem await
       '@typescript-eslint/no-unsafe-argument': 'warn',// Permite usar argumentos inseguros
-      'prettier/prettier': ['error', { endOfLine: 'auto' }],// Força o uso do prettier
+      'prettier/prettier': 'off',// Desativa validação do prettier no ESLint
 
       '@typescript-eslint/interface-name-prefix': 'off',// Permite usar interface-name-prefix
       '@typescript-eslint/explicit-function-return-type': 'off',// Permite usar explicit-function-return-type

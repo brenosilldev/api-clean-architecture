@@ -1,17 +1,9 @@
-// DynamicModule é o tipo retornado por módulos que se configuram em tempo de execução.
-// Module é o decorator que transforma uma classe em módulo NestJS.
 import { DynamicModule, Module } from '@nestjs/common';
 
-// ConfigModule é o módulo oficial do NestJS para leitura de variáveis de ambiente.
-// ConfigModuleOptions são as opções de configuração que podemos passar para ele.
 import { ConfigModule, ConfigModuleOptions } from '@nestjs/config';
 
-// Importa o serviço que implementa a leitura das variáveis de ambiente.
 import { EnvConfigService } from './env-config.service';
 
-// "path" é um módulo nativo do Node.js para manipulação de caminhos de arquivo.
-// (Importado aqui mas ainda não utilizado — pode ser usado futuramente para
-// apontar o caminho do arquivo .env de forma dinâmica.)
 import path from 'path';
 
 // @Module configura este módulo:

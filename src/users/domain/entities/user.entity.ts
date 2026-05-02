@@ -1,16 +1,11 @@
-// Importa a classe base Entity do módulo compartilhado (shared).
-// UserEntity vai estender Entity, herdando o id e o toJSON().
 import { Entity } from '../../../shared/domain/entities/entity';
+import { UserValidatorFactory } from '../validator/user.validator';
 
-// Define o formato (tipo) das propriedades do usuário.
-// Esse tipo é passado como genérico para Entity<UserProps>,
-// informando quais campos essa entidade possui.
 export type UserProps = {
-    // id?: string;       // Opcional — usado apenas ao reconstruir um usuário do banco
-    name: string;      // Nome do usuário (obrigatório)
-    email: string;     // E-mail do usuário (obrigatório)
-    password: string;  // Senha do usuário (obrigatório)
-    createdAt?: Date;  // Data de criação — preenchida automaticamente se não for informada
+    name: string;
+    email: string;
+    password: string;
+    createdAt?: Date;
 };
 
 // Entidade de domínio que representa um Usuário.
@@ -18,16 +13,15 @@ export type UserProps = {
 // No DDD, a entidade encapsula os dados e garante que eles sejam acessados
 // de forma controlada (via getters), sem expor a estrutura interna diretamente.
 export class UserEntity extends Entity<UserProps> {
-    constructor(
-        public readonly props: UserProps,
-        id?: string, // ID opcional — se não passar, a classe base gera um UUID novo
-    ) {
+    constructor(public readonly props: UserProps,id?: string) {
         // Chama o construtor da classe pai (Entity), passando as props e o id.
         super(props, id);
 
         // Se createdAt não foi informado ao criar o usuário, define como a data/hora atual.
         // O operador "??" é o "nullish coalescing": só substitui se for null ou undefined.
         this.props.createdAt = this.props.createdAt ?? new Date();
+
+        UserEntity.validate(props);
     }
 
     // Getter para acessar a data de criação do usuário.
@@ -35,10 +29,6 @@ export class UserEntity extends Entity<UserProps> {
     // sem precisar chamar um método com parênteses: user.createdAt (não user.getCreatedAt()).
     get createdAt() {
         return this.props.createdAt;
-    }
-
-    updateName(value: string): void {
-        this.props.name = value;
     }
 
     // Getter para acessar o nome do usuário.
@@ -62,5 +52,20 @@ export class UserEntity extends Entity<UserProps> {
 
     private set password(value: string) {
         this.props.password = value;
+    }
+
+    updateName(value: string): void {
+        UserEntity.validate({ ...this.props, name: value });
+        this.props.name = value;
+    }
+
+    updatePassword(value: string): void {
+        UserEntity.validate({ ...this.props, password: value });
+        this.props.password = value;
+    }
+
+    static validate(props: UserProps) {
+        const validator = UserValidatorFactory.create();
+        validator.validate(props);
     }
 }

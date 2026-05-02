@@ -1,12 +1,7 @@
-// Importa a entidade e o tipo de props que serão testados.
 import { UserEntity, UserProps } from '../../user.entity';
-
-// Importa o Test Data Builder para gerar dados de usuário automaticamente nos testes.
 import { UserDataBuilder } from '../../../testing/helpers/user-data-builders';
 
-// "describe" agrupa todos os testes relacionados à UserEntity.
 describe('UserEntity', () => {
-    // Variáveis acessíveis em todos os testes do bloco.
     let user: UserEntity;
     let props: UserProps;
 
@@ -87,8 +82,8 @@ describe('UserEntity', () => {
     });
 
     it('Update password method should update the password ', () => {
-        user['password'] = 'updated password';
+        user.updatePassword('updated password');
         expect(user.props.password).toEqual('updated password');
-        
+
     });
 });

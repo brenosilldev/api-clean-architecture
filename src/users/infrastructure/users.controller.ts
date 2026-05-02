@@ -1,17 +1,6 @@
-// Importa os decorators HTTP do NestJS para definir rotas e métodos.
-// Controller → define a rota base do recurso
-// Get, Post, Patch, Delete → mapeiam os métodos HTTP
-// Body → extrai o corpo da requisição
-// Param → extrai parâmetros da URL (ex: :id)
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-
-// Importa o serviço que contém a lógica de negócio dos usuários.
-// O controller não tem lógica própria — ele apenas recebe a requisição HTTP
-// e delega o processamento para o serviço correspondente.
 import { UsersService } from './users.service';
 
-// DTOs (Data Transfer Objects) definem o formato esperado dos dados
-// que chegam no corpo das requisições.
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 

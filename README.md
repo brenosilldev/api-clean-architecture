@@ -6,14 +6,16 @@ Projeto de estudo focado em **Clean Architecture**, **Domain-Driven Design (DDD)
 
 ## Objetivo
 
-Aprender na prática como estruturar uma API escalável e bem organizada usando os princípios de:
+Aprender, na prática, como estruturar uma API escalável e organizada aplicando:
 
-- **Clean Architecture** — separação clara de responsabilidades em camadas independentes
-- **DDD (Domain-Driven Design)** — modelagem orientada ao domínio do negócio
-- **Testes automatizados** — testes unitários com Jest
-- **Design Patterns** — padrões como Builder (Test Data Builder), Abstract Class, etc.
+- **Clean Architecture** — separação clara de responsabilidades entre camadas
+- **DDD (Domain-Driven Design)** — modelagem orientada às regras de negócio
+- **Testes automatizados** — validação contínua da aplicação com confiança para evoluir
+- **Design Patterns** — padrões para reduzir acoplamento e melhorar manutenção
 
---- 
+> O foco deste projeto é implementação prática. A teoria aparece quando ajuda a tomar melhores decisões de design.
+
+---
 
 ## Stack
 
@@ -21,20 +23,21 @@ Aprender na prática como estruturar uma API escalável e bem organizada usando 
 |---|---|
 | [NestJS](https://nestjs.com/) | Framework principal (HTTP, DI, módulos) |
 | [Fastify](https://fastify.dev/) | Adapter HTTP de alta performance |
-| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática |
+| [TypeScript](https://www.typescriptlang.org/) | Tipagem estática e modelagem de contratos |
 | [Jest](https://jestjs.io/) | Testes unitários e de integração |
-| [@faker-js/faker](https://fakerjs.dev/) | Geração de dados falsos nos testes |
+| [@faker-js/faker](https://fakerjs.dev/) | Geração de dados para cenários de teste |
 | [@nestjs/config](https://docs.nestjs.com/techniques/configuration) | Gerenciamento de variáveis de ambiente |
+| [Prisma ORM](https://www.prisma.io/) | Persistência e consultas tipadas (evolução do projeto) |
 
 ---
 
 ## O que é Clean Architecture?
 
-Clean Architecture é um conjunto de princípios de design de software criado por Robert C. Martin (Uncle Bob). O objetivo central é criar sistemas onde **as regras de negócio não dependem de detalhes técnicos** — frameworks, bancos de dados, HTTP ou qualquer tecnologia externa.
+Clean Architecture (Robert C. Martin) organiza o sistema para que **as regras de negócio sejam independentes de detalhes técnicos**. Isso significa que domínio e casos de uso não devem depender diretamente de framework, banco, HTTP ou serviços externos.
 
 ### As 4 camadas
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │           Frameworks & Drivers                           │
 │   (Web, DB, UI, Devices, External Interfaces)            │
@@ -55,93 +58,92 @@ Clean Architecture é um conjunto de princípios de design de software criado po
 
 | Camada | O que contém | Exemplo neste projeto |
 |---|---|---|
-| **Entities** | Regras de negócio da empresa — independentes de qualquer aplicação | `UserEntity`, `Entity<Props>` |
-| **Use Cases** | Regras de negócio da aplicação — orquestram as entidades para um objetivo | `UsersService` (futuramente classes de Use Case dedicadas) |
-| **Interface Adapters** | Convertem dados entre o formato dos Use Cases e o mundo externo | `UsersController`, DTOs, Gateways |
-| **Frameworks & Drivers** | Detalhes técnicos: HTTP, banco de dados, frameworks | NestJS, Fastify, TypeORM/Prisma |
+| **Entities** | Regras centrais do domínio, independentes de tecnologia | `UserEntity`, `Entity<Props>` |
+| **Use Cases** | Regras de aplicação que orquestram o domínio | `UsersService` (evoluindo para use cases dedicados) |
+| **Interface Adapters** | Conversão entre domínio/use case e mundo externo | `UsersController`, DTOs |
+| **Frameworks & Drivers** | Implementações concretas de infraestrutura | NestJS, Fastify, Prisma |
 
-### Princípio fundamental: a Regra de Dependência
+### Princípio fundamental: Regra de Dependência
 
-As dependências entre camadas devem **sempre apontar para dentro**. A camada de Entities não conhece Use Cases; Use Cases não conhecem Controllers; Controllers não conhecem o banco de dados diretamente — sempre através de interfaces (portas).
+As dependências entre camadas devem sempre apontar para dentro:
 
-```
+```text
 Frameworks & Drivers  →  Interface Adapters  →  Use Cases  →  Entities
 ```
 
-Nenhuma camada interna sabe que as camadas externas existem.
+Na prática:
+
+- O domínio não conhece controller, banco ou NestJS
+- Use case conhece abstrações (interfaces), não implementações concretas
+- Detalhes técnicos ficam nas camadas externas
 
 ### Fluxo de controle: Ports & Adapters
 
-O diagrama abaixo mostra como uma requisição HTTP percorre as camadas respeitando a Regra de Dependência:
-
-```
+```text
    [Controller]
        │
-       │ chama
        ▼
-[Use Case Input Port]    ← interface que o Controller conhece
+[Use Case Input Port]   ← contrato exposto para entrada
        │
-       │ implementado por
        ▼
-[Use Case Interactor]    ← lógica de aplicação (Use Case concreto)
+[Use Case Interactor]   ← implementação da regra de aplicação
        │
-       │ chama
        ▼
-[Use Case Output Port]   ← interface que o Interactor conhece
+[Use Case Output Port]  ← contrato de saída
        │
-       │ implementado por
        ▼
-   [Presenter]           ← formata a resposta para o mundo externo
+   [Presenter]
 ```
 
-- **Input Port**: interface que define o que o Controller pode chamar — o Use Case expõe apenas um contrato.
-- **Use Case Interactor**: a implementação concreta que orquestra Entities e Repositories.
-- **Output Port**: interface que define como o resultado será entregue — o Presenter implementa essa interface sem que o Use Case saiba qual tecnologia está sendo usada.
+- **Input Port** define o que pode ser executado
+- **Interactor** executa a regra de negócio da aplicação
+- **Output Port** define como a resposta deve ser produzida
+- **Presenter** adapta o resultado para o formato externo (JSON, por exemplo)
 
-Esse modelo permite trocar o Controller (REST → GraphQL → CLI) ou o Presenter (JSON → XML → gRPC) sem alterar nenhuma regra de negócio.
+Esse desenho desacopla regras de negócio dos detalhes de entrega.
 
 ### Por que isso importa?
 
-- O domínio pode ser testado sem subir o framework ou conectar ao banco
-- Trocar o banco de dados ou o framework HTTP não exige reescrever as regras de negócio
-- Cada camada tem uma responsabilidade bem definida e pode evoluir de forma independente
+- Domínio testável sem framework ou banco
+- Maior facilidade para trocar tecnologias
+- Menor efeito colateral em refatorações
 
 ---
 
 ## Estrutura de pastas
 
-```
+```text
 src/
-├── shared/                              # Código compartilhado entre módulos
+├── shared/                               # Código compartilhado entre módulos
 │   ├── domain/
 │   │   └── entities/
-│   │       ├── entity.ts               # Classe abstrata base para todas as entidades
+│   │       ├── entity.ts                # Entidade base abstrata
 │   │       └── __tests__/unit/
 │   │           └── entity.spec.ts
 │   └── infrastructure/
 │       └── env-config/
-│           ├── env-config.interface.ts  # Contrato (interface) da configuração de ambiente
+│           ├── env-config.interface.ts  # Contrato de configuração
 │           ├── env-config.module.ts     # Módulo NestJS
-│           ├── env-config.service.ts    # Implementação concreta
+│           ├── env-config.service.ts    # Implementação da configuração
 │           └── __tests__/unit/
 │               └── env-config.service.spec.ts
 │
-└── users/                               # Módulo de usuários
-    ├── domain/                          # Camada de domínio — regras de negócio puras
+└── users/                                # Contexto de usuários
+    ├── domain/                           # Regras de negócio puras
     │   ├── entities/
-    │   │   ├── user.entity.ts           # Entidade User com getters e comportamentos
+    │   │   ├── user.entity.ts           # Entidade User e comportamentos
     │   │   └── __tests__/unit/
     │   │       └── user.entity.spec.ts
     │   └── testing/
     │       └── helpers/
     │           └── user-data-builders.ts  # Test Data Builder para UserEntity
-    └── infrastructure/                  # Camada de infraestrutura — detalhes técnicos
+    └── infrastructure/                   # Detalhes técnicos do módulo
         ├── dto/
-        │   ├── create-user.dto.ts       # Formato esperado para criação de usuário
-        │   └── update-user.dto.ts       # Formato esperado para atualização de usuário
-        ├── users.controller.ts          # Recebe requisições HTTP e delega ao serviço
-        ├── users.service.ts             # Lógica de aplicação (futuramente: use cases)
-        └── users.module.ts             # Módulo NestJS do contexto de usuários
+        │   ├── create-user.dto.ts       # Contrato de criação
+        │   └── update-user.dto.ts       # Contrato de atualização
+        ├── users.controller.ts           # Entrada HTTP
+        ├── users.service.ts              # Regra de aplicação (transição para use cases)
+        └── users.module.ts               # Composição do módulo
 ```
 
 ---
@@ -150,11 +152,11 @@ src/
 
 ### Entidade base (`Entity<Props>`)
 
-A classe abstrata `Entity<Props>` em `src/shared/domain/entities/entity.ts` é a base para todas as entidades do domínio. Ela garante que toda entidade tenha:
+A classe abstrata `Entity<Props>` em `src/shared/domain/entities/entity.ts` padroniza o comportamento mínimo das entidades de domínio:
 
-- Um `id` único gerado automaticamente com `crypto.randomUUID()`, ou recebido como parâmetro (útil para reconstruir entidades vindas do banco)
-- Um conjunto tipado de `props`
-- Um método `toJSON()` para serialização
+- `id` único para identidade
+- `props` tipadas para estado
+- serialização com `toJSON()`
 
 ```ts
 export abstract class Entity<Props = any> {
@@ -174,7 +176,7 @@ export abstract class Entity<Props = any> {
 
 ### Entidade de domínio (`UserEntity`)
 
-`UserEntity` estende `Entity<UserProps>` e representa o usuário no domínio. O `createdAt` é preenchido automaticamente se não for informado. Os campos são acessados via **getters**, que encapsulam o estado interno sem expor a estrutura diretamente:
+`UserEntity` representa o usuário no domínio e concentra dados + comportamento. Ela garante consistência mínima no momento da criação (como `createdAt` padrão) e encapsula mutações com métodos explícitos:
 
 ```ts
 export class UserEntity extends Entity<UserProps> {
@@ -194,11 +196,11 @@ export class UserEntity extends Entity<UserProps> {
 }
 ```
 
-> No DDD, entidades possuem **identidade** (o `id`) e podem ter **comportamentos** (métodos como `updateName`). Elas não são apenas bags de dados.
+> Em DDD, entidade não é apenas estrutura de dados: ela possui identidade e comportamento.
 
 ### Design Pattern — Test Data Builder
 
-Para facilitar a criação de dados nos testes, foi implementado o padrão **Test Data Builder** com `@faker-js/faker`. Ele gera dados realistas e aleatórios, permitindo sobrescrever apenas o que for relevante para cada cenário de teste:
+O padrão **Test Data Builder** simplifica testes ao gerar dados válidos por padrão e permitir sobrescrever apenas o campo relevante do cenário.
 
 ```ts
 // src/users/domain/testing/helpers/user-data-builders.ts
@@ -212,16 +214,16 @@ export function UserDataBuilder(props: Partial<UserProps>): UserProps {
 }
 ```
 
-Uso nos testes:
+Uso:
 
 ```ts
-UserDataBuilder({})                // todos os campos aleatórios
-UserDataBuilder({ name: 'João' }) // só o nome é fixo, o resto aleatório
+UserDataBuilder({});
+UserDataBuilder({ name: 'João' });
 ```
 
 ### Testes automatizados
 
-Os testes unitários ficam em `__tests__/unit/` próximos ao arquivo que testam, com o sufixo `.spec.ts`. Cada teste verifica o comportamento isolado da unidade, sem dependência de banco de dados ou rede:
+Os testes unitários ficam próximos da unidade testada (`__tests__/unit/*.spec.ts`) e validam comportamento de forma isolada.
 
 ```ts
 describe('UserEntity', () => {
@@ -245,12 +247,17 @@ describe('UserEntity', () => {
 });
 ```
 
+Níveis abordados no projeto:
+
+- **Unitário**: valida regra local de uma classe/função
+- **Integração**: valida interação entre componentes
+- **E2E**: valida fluxo completo da API
+
 ### DTOs (Data Transfer Objects)
 
-DTOs definem o contrato de entrada das requisições HTTP. Eles existem na camada de infraestrutura e não devem vazar para o domínio:
+DTOs definem o contrato de entrada da API. Eles pertencem à infraestrutura e evitam que o domínio fique acoplado ao formato HTTP.
 
 ```ts
-// create-user.dto.ts
 export class CreateUserDto {
     name: string;
     email: string;
@@ -260,7 +267,7 @@ export class CreateUserDto {
 
 ### Controller e Service
 
-O **Controller** recebe a requisição HTTP e delega ao **Service** — ele não contém lógica de negócio:
+Controller deve ser fino: recebe requisição, delega a regra de aplicação e devolve resposta.
 
 ```ts
 @Controller('users')
@@ -274,13 +281,13 @@ export class UsersController {
 }
 ```
 
-O **Service** concentra a lógica de aplicação. Em uma Clean Architecture completa, aqui ficariam os **Use Cases** — cada operação encapsulada em sua própria classe:
+Service concentra a lógica de aplicação e tende a evoluir para use cases dedicados por operação:
 
 ```ts
 @Injectable()
 export class UsersService {
     create(createUserDto: CreateUserDto) {
-        // Futuramente: instanciar UserEntity, validar, persistir via repositório
+        // Evolução: instanciar UserEntity, validar e persistir via repositório
         return 'This action adds a new user';
     }
 }
@@ -306,13 +313,13 @@ export class UsersService {
 # Instalar dependências
 npm install
 
-# Rodar em modo desenvolvimento (watch)
+# Rodar em modo desenvolvimento
 npm run start:dev
 
 # Rodar os testes
 npm test
 
-# Rodar testes com relatório de cobertura
+# Cobertura
 npm run test:cov
 ```
 
@@ -327,10 +334,11 @@ npm run test:cov
 
 ---
 
-## Proximos passos
+## Próximos passos
 
 - [ ] Implementar repositórios (Repository Pattern)
-- [ ] Adicionar casos de uso (Use Cases / Application layer)
-- [ ] Validação de entidades com Value Objects
-- [ ] Testes de integração
-- [ ] Persistência com banco de dados (TypeORM / Prisma)
+- [ ] Adicionar casos de uso dedicados (Application Layer)
+- [ ] Evoluir validações com Value Objects
+- [ ] Expandir testes de integração e E2E
+- [ ] Consolidar persistência com Prisma
+- [ ] Configurar workflow de CI com GitHub Actions

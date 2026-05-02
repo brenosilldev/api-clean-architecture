@@ -1,17 +1,10 @@
-// Test é o utilitário do NestJS para criar módulos isolados nos testes.
-// TestingModule é o tipo do módulo criado pelo Test.
 import { Test, TestingModule } from '@nestjs/testing';
 
-// Importa o serviço que será testado.
 import { EnvConfigService } from '../../env-config.service';
 
-// Importa o módulo de configuração para que o ConfigService esteja disponível
-// dentro do ambiente de teste (o EnvConfigService depende dele).
 import { EnvConfigModule } from '../../env-config.module';
 
-// "describe" agrupa todos os testes do EnvConfigService.
 describe('EnvConfigService', () => {
-    // Variável que guarda a instância do serviço após a criação do módulo de teste.
     let service: EnvConfigService;
 
     // "beforeEach" executa antes de cada teste para configurar o ambiente isolado.
@@ -35,6 +28,7 @@ describe('EnvConfigService', () => {
 
     // Teste: verifica se getAppPort() retorna 3000 (padrão quando PORT não está no .env).
     it('should return the app port', () => {
+        console.log(service.getAppPort());
         expect(service.getAppPort()).toBe(3000);
     });
 

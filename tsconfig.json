@@ -1,32 +1,30 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "module": "nodenext", // Especifica o módulo do Node.js
+    "moduleResolution": "nodenext", // Especifica a resolução do módulo do Node.js
+    "resolvePackageJsonExports": true, // Resolve as exportações do package.json
+    "esModuleInterop": true, // Habilita a interoperabilidade entre módulos ES6 e CommonJS
+    "isolatedModules": true, // Isola os módulos para evitar conflitos de namespace
+    "declaration": true, // Gera declarações de tipo para o código
+    "removeComments": true, // Remove os comentários do código
+    "emitDecoratorMetadata": true, // Emite metadados de decoradores
+    "experimentalDecorators": true, // Habilita os decoradores experimentais
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-  
-    "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true,
-    "types": ["node", "jest"],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "target": "ES2023", // Especifica o target de compilação
+    "sourceMap": true, // Gera source map para o código
+    "outDir": "./dist", // Especifica o diretório de saída para o código compilado
+    "baseUrl": "./", // Especifica o diretório base para os caminhos dos módulos
+    "incremental": true,    // Habilita o incremental compilation
+    "skipLibCheck": true,    // Pula a verificação de tipos das bibliotecas
+    "strictNullChecks": true, // Habilita a verificação de null e undefined
+    "forceConsistentCasingInFileNames": true, // Força o uso de casing consistente nos arquivos
+    "noImplicitAny": false, // Permite usar any como tipo
+    "strictBindCallApply": false, // Habilita a verificação de bind, call e apply
+    "noFallthroughCasesInSwitch": false, // Habilita a verificação de casos sem fallback no switch
+    "resolveJsonModule": true, // Resolve os módulos JSON
+    "types": ["node", "jest"], // Especifica os tipos de node e jest
+    "paths": { "@/*": ["./src/*"] } // Especifica os caminhos dos módulos
+    
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

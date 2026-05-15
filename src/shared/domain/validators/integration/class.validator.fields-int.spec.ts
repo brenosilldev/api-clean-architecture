@@ -11,6 +11,8 @@ class StubRules {
     @IsNotEmpty()
     price: number;
 
+
+
     constructor(data: any) {
         Object.assign(this, data); // Atribui as propriedades do objeto data ao objeto this
     }
@@ -31,6 +33,7 @@ describe('Testes de integração de ClassValidatorFields', () => {
 
         const validator = new StubClassValidatorFields();
 
+        console.log(validator.errors);
         // Validar com dados nulos
         expect(validator.validate(null)).toBeFalsy();
 

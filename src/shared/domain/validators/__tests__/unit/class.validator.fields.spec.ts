@@ -34,6 +34,7 @@ describe('Testes unitários de ClassValidatorFields', () => {
     });
 
     it('Deve validar sem erros', () => {
+
         // Arrange: simula o class-validator sem retornar erros
         const spyValidateSync = jest.spyOn(libClassValidator, 'validateSync');
         spyValidateSync.mockReturnValue([]);

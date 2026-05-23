@@ -10,7 +10,7 @@ export abstract class ClassValidatorFields<PropsValidated extends object> implem
     validatedData: PropsValidated = {} as PropsValidated;
 
     validate(data: PropsValidated): boolean {
-        const errors: ValidationError[] = validateSync(data);
+        const errors = validateSync(data);
 
         if (errors.length) {
             this.errors = {};

@@ -1,6 +1,7 @@
 import { randomUUID as generateId } from 'node:crypto';
 
 export abstract class Entity<Props = any> {// Classe abstrata para entidades
+
     public readonly _id: string; // ID único da entidade
 
     public readonly props: Props; // Propriedades da entidade
